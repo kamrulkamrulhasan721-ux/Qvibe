@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qvibe – Settings</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@300;400;500;600&display=swap');
+  :root{
+    --p1:#7B2FFF;--p2:#A855F7;--p3:#C084FC;--glow:rgba(123,47,255,0.4);
+    --bg:#0A0A0F;--surface:#111118;--card:#18181F;--border:rgba(123,47,255,0.18);--text:#F0EEFF;--sub:#9B92B8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:40px;}
+
+  .topbar{display:flex;align-items:center;gap:12px;padding:14px 20px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+  .back-btn{font-size:22px;cursor:pointer;}
+  .topbar-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;}
+
+  /* PROFILE CARD */
+  .profile-card{margin:16px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .2s;}
+  .profile-card:hover{border-color:var(--p2);}
+  .p-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--p1),var(--p3));display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;box-shadow:0 0 0 2px var(--p2);}
+  .p-info{flex:1;}
+  .p-name{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;}
+  .p-handle{font-size:13px;color:var(--sub);}
+  .p-arrow{font-size:18px;color:var(--sub);}
+
+  /* SECTION */
+  .settings-section{padding:0 16px;margin-bottom:8px;}
+  .section-label{font-size:11px;color:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-left:4px;}
+  .settings-group{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+  .settings-item{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;transition:background .2s;border-bottom:1px solid var(--border);}
+  .settings-item:last-child{border-bottom:none;}
+  .settings-item:hover{background:rgba(123,47,255,0.08);}
+  .item-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .item-info{flex:1;}
+  .item-title{font-size:14px;font-weight:600;}
+  .item-sub{font-size:12px;color:var(--sub);margin-top:2px;}
+  .item-arrow{font-size:16px;color:var(--sub);}
+  .item-badge{background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;font-size:10px;padding:2px 8px;border-radius:99px;font-weight:700;}
+  .item-badge.premium{background:linear-gradient(135deg,#F59E0B,#F97316);}
+
+  /* TOGGLE */
+  .toggle{width:46px;height:26px;background:var(--border);border-radius:99px;position:relative;cursor:pointer;transition:background .3s;flex-shrink:0;}
+  .toggle.on{background:var(--p1);}
+  .toggle-dot{width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .3s;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+  .toggle.on .toggle-dot{left:23px;}
+
+  /* DANGER */
+  .danger .item-title{color:#F87171;}
+  .danger .item-icon{background:rgba(248,113,113,0.15);}
+
+  .version-text{text-align:center;font-size:12px;color:var(--sub);padding:20px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="back-btn" onclick="window.location.href='profile.html'">←</div>
+  <div class="topbar-title">Settings</div>
+</div>
+
+<!-- PROFILE -->
+<div class="profile-card" onclick="window.location.href='edit-profile.html'">
+  <div class="p-avatar">😎</div>
+  <div class="p-info">
+    <div class="p-name">Your Name</div>
+    <div class="p-handle">@yourname · Edit Profile →</div>
+  </div>
+  <div class="p-arrow">›</div>
+</div>
+
+<!-- ACCOUNT INFORMATION -->
+<div class="settings-section">
+  <div class="section-label">👤 Account Information</div>
+  <div class="settings-group">
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(123,47,255,0.15)">👤</div>
+      <div class="item-info"><div class="item-title">Full Name</div><div class="item-sub">Your Name</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(123,47,255,0.15)">✨</div>
+      <div class="item-info"><div class="item-title">Username</div><div class="item-sub">@yourname</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(59,130,246,0.15)">📧</div>
+      <div class="item-info"><div class="item-title">Email Address</div><div class="item-sub">you@email.com</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(34,197,94,0.15)">📱</div>
+      <div class="item-info"><div class="item-title">Phone Number</div><div class="item-sub">Add phone number</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(251,146,60,0.15)">🎂</div>
+      <div class="item-info"><div class="item-title">Date of Birth</div><div class="item-sub">Add your birthday</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(244,114,182,0.15)">🚻</div>
+      <div class="item-info"><div class="item-title">Gender</div><div class="item-sub">Prefer not to say</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(20,184,166,0.15)">🌐</div>
+      <div class="item-info"><div class="item-title">Website</div><div class="item-sub">Add your website</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(123,47,255,0.15)">📝</div>
+      <div class="item-info"><div class="item-title">Bio</div><div class="item-sub">Tell your vibe...</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(148,163,184,0.15)">📅</div>
+      <div class="item-info"><div class="item-title">Join Date</div><div class="item-sub">June 2026</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY -->
+<div class="settings-section">
+  <div class="section-label">🔒 Privacy Settings</div>
+  <div class="settings-group">
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(15,23,42,0.5)">🌙</div>
+      <div class="item-info"><div class="item-title">Invisible Mode</div><div class="item-sub">Hide your online status</div></div>
+      <div class="toggle" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(123,47,255,0.15)">🔒</div>
+      <div class="item-info"><div class="item-title">Profile Lock</div><div class="item-sub">Hide info from non-followers</div></div>
+      <div class="toggle" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(192,132,252,0.15)">💜</div>
+      <div class="item-info"><div class="item-title">Close Vibes</div><div class="item-sub">Only close friends see posts</div></div>
+      <div class="toggle" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(251,146,60,0.15)">🏷️</div>
+      <div class="item-info"><div class="item-title">Tag Permissions</div><div class="item-sub">Who can tag you</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(59,130,246,0.15)">📨</div>
+      <div class="item-info"><div class="item-title">Message Requests</div><div class="item-sub">Who can message you</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(148,163,184,0.15)">🙈</div>
+      <div class="item-info"><div class="item-title">Hide Followers List</div><div class="item-sub">Keep your followers private</div></div>
+      <div class="toggle" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(148,163,184,0.15)">🙉</div>
+      <div class="item-info"><div class="item-title">Hide Following List</div><div class="item-sub">Keep your following private</div></div>
+      <div class="toggle" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(248,113,113,0.15)">🚫</div>
+      <div class="item-info"><div class="item-title">Blocked Users</div><div class="item-sub">Manage blocked accounts</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(245,158,11,0.15)">👻</div>
+      <div class="item-info"><div class="item-title">Ghost View</div><div class="item-sub">View without leaving a trace</div></div>
+      <span class="item-badge premium">Premium</span>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(245,158,11,0.15)">📸</div>
+      <div class="item-info"><div class="item-title">Screenshot Alert</div><div class="item-sub">Get notified of screenshots</div></div>
+      <span class="item-badge premium">Premium</span>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(245,158,11,0.15)">🤫</div>
+      <div class="item-info"><div class="item-title">Secret Inbox</div><div class="item-sub">Hidden chat folder</div></div>
+      <span class="item-badge premium">Premium</span>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(245,158,11,0.15)">🧹</div>
+      <div class="item-info"><div class="item-title">Auto Delete Vibes</div><div class="item-sub">Posts auto-delete after set time</div></div>
+      <span class="item-badge premium">Premium</span>
+    </div>
+  </div>
+</div>
+<!-- NOTIFICATIONS -->
+<div class="settings-section">
+  <div class="section-label">🔔 Notification Settings</div>
+  <div class="settings-group">
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(244,114,182,0.15)">❤️</div>
+      <div class="item-info"><div class="item-title">Likes</div><div class="item-sub">When someone vibes your post</div></div>
+      <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(59,130,246,0.15)">💬</div>
+      <div class="item-info"><div class="item-title">Comments</div><div class="item-sub">When someone waves on your post</div></div>
+      <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(123,47,255,0.15)">👤</div>
+      <div class="item-info"><div class="item-title">New Followers</div><div class="item-sub">When someone follows you</div></div>
+      <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(34,197,94,0.15)">📨</div>
+      <div class="item-info"><div class="item-title">Messages</div><div class="item-sub">New message notifications</div></div>
+      <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(251,146,60,0.15)">🏷️</div>
+      <div class="item-info"><div class="item-title">Mentions</div><div class="item-sub">When someone mentions you</div></div>
+      <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(239,68,68,0.15)">🔥</div>
+      <div class="item-info"><div class="item-title">Trending</div><div class="item-sub">Your post is trending</div></div>
+      <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(20,184,166,0.15)">📢</div>
+      <div class="item-info"><div class="item-title">App Updates</div><div class="item-sub">New features and updates</div></div>
+      <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(148,163,184,0.15)">🔊</div>
+      <div class="item-info"><div class="item-title">Notification Sound</div><div class="item-sub">Play sound for notifications</div></div>
+      <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(148,163,184,0.15)">📳</div>
+      <div class="item-info"><div class="item-title">Vibration</div><div class="item-sub">Vibrate on notification</div></div>
+      <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECURITY -->
+<div class="settings-section">
+  <div class="section-label">🛡️ Security Settings</div>
+  <div class="settings-group">
+    <div class="settings-item" onclick="window.location.href='change-password.html'">
+      <div class="item-icon" style="background:rgba(123,47,255,0.15)">🔑</div>
+      <div class="item-info"><div class="item-title">Change Password</div><div class="item-sub">Update your password</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(59,130,246,0.15)">📧</div>
+      <div class="item-info"><div class="item-title">Change Email</div><div class="item-sub">you@email.com</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(34,197,94,0.15)">📱</div>
+      <div class="item-info"><div class="item-title">Change Phone Number</div><div class="item-sub">Add or update phone</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(245,158,11,0.15)">🛡️</div>
+      <div class="item-info"><div class="item-title">Two-Factor Authentication</div><div class="item-sub">Extra security for your account</div></div>
+      <div class="toggle" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(123,47,255,0.15)">📲</div>
+      <div class="item-info"><div class="item-title">Active Devices</div><div class="item-sub">See where you're logged in</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(148,163,184,0.15)">📜</div>
+      <div class="item-info"><div class="item-title">Login History</div><div class="item-sub">See your recent logins</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item">
+      <div class="item-icon" style="background:rgba(239,68,68,0.15)">🚨</div>
+      <div class="item-info"><div class="item-title">Suspicious Login Alerts</div><div class="item-sub">Get alerted for unknown logins</div></div>
+      <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-dot"></div></div>
+    </div>
+    <div class="settings-item" onclick="logoutAll()">
+      <div class="item-icon" style="background:rgba(239,68,68,0.15)">🔓</div>
+      <div class="item-info"><div class="item-title">Logout All Devices</div><div class="item-sub">Sign out everywhere</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+  </div>
+</div>
+
+<!-- DANGER ZONE -->
+<div class="settings-section">
+  <div class="section-label">⚠️ Account Actions</div>
+  <div class="settings-group">
+    <div class="settings-item" onclick="logout()">
+      <div class="item-icon" style="background:rgba(248,113,113,0.15)">🚪</div>
+      <div class="item-info danger"><div class="item-title">Log Out</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item" onclick="deactivate()">
+      <div class="item-icon" style="background:rgba(248,113,113,0.15)">🗑️</div>
+      <div class="item-info danger"><div class="item-title">Deactivate Account</div><div class="item-sub">Temporarily disable your account</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+    <div class="settings-item" onclick="deleteAccount()">
+      <div class="item-icon" style="background:rgba(248,113,113,0.15)">❌</div>
+      <div class="item-info danger"><div class="item-title">Delete Account</div><div class="item-sub">Permanently delete everything</div></div>
+      <div class="item-arrow">›</div>
+    </div>
+  </div>
+</div>
+
+<div class="version-text">Qvibe v1.0.0 ✦ Made with 💜</div>
+
+<script>
+  function toggleSwitch(el){
+    el.classList.toggle('on');
+  }
+  function logout(){
+    if(confirm('Log out from Qvibe?')){
+      window.location.href='login.html';
+    }
+  }
+  function logoutAll(){
+    if(confirm('Logout from all devices?')){
+      alert('Logged out from all devices! 🔓');
+      window.location.href='login.html';
+    }
+  }
+  function deactivate(){
+    if(confirm('Deactivate your account? You can reactivate anytime.')){
+      alert('Account deactivated. See you soon! 💜');
+      window.location.href='login.html';
+    }
+  }
+  function deleteAccount(){
+    if(confirm('⚠️ Delete your account permanently? This cannot be undone!')){
+      if(confirm('Are you absolutely sure? All your data will be lost forever!')){
+        alert('Account deleted. Goodbye! 😢');
+        window.location.href='login.html';
+      }
+    }
+  }
+</script>
+</body>
+</html>

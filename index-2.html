@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qvibe</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+  :root{
+    --p1:#7B2FFF;--p2:#A855F7;--p3:#C084FC;--glow:rgba(123,47,255,0.4);
+    --bg:#0D0D14;--surface:#13131E;--card:#1A1A28;--border:rgba(255,255,255,0.06);--text:#F0EEFF;--sub:#8B8BA7;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px;}
+
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px 12px;background:var(--bg);position:sticky;top:0;z-index:100;}
+  .logo{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;background:linear-gradient(90deg,var(--p1),var(--p3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .greeting{font-size:13px;color:var(--sub);margin-top:2px;}
+  .topbar-right{display:flex;gap:10px;align-items:center;}
+  .notif-btn{width:38px;height:38px;background:var(--card);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;border:1px solid var(--border);}
+  .notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:#F472B6;border-radius:50%;border:1.5px solid var(--bg);}
+
+  .post-box{margin:0 16px 16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;cursor:pointer;transition:border-color .2s;}
+  .post-box:hover{border-color:rgba(123,47,255,0.3);}
+  .post-box-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .post-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--p1),var(--p3));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  .post-placeholder{font-size:14px;color:var(--sub);}
+  .post-box-btns{display:flex;gap:8px;}
+  .post-type-btn{display:flex;align-items:center;gap:5px;padding:7px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--sub);cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+  .post-type-btn:hover{border-color:var(--p2);color:var(--p2);}
+  .post-type-btn svg{flex-shrink:0;}
+  
+  .stories-section{padding:0 16px 16px;}
+  .stories{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;}
+  .stories::-webkit-scrollbar{display:none;}
+  .story{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;}
+  .story-ring{width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,var(--p1),#F472B6,var(--p3));padding:2.5px;transition:transform .2s;}
+  .story-ring:hover{transform:scale(1.05);}
+  .story-add .story-ring{background:var(--card);border:1.5px dashed rgba(123,47,255,0.4);}
+  .story-inner{width:100%;height:100%;border-radius:50%;background:var(--card);border:2.5px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;}
+  .story-name{font-size:11px;color:var(--sub);text-align:center;max-width:62px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  .trending-section{padding:0 16px 16px;}
+  .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .section-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;}
+  .see-all{font-size:12px;color:var(--p2);cursor:pointer;}
+  .trend-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
+  .trend-chips::-webkit-scrollbar{display:none;}
+  .trend-chip{padding:6px 14px;background:var(--card);border:1px solid var(--border);border-radius:99px;font-size:12px;color:var(--p3);cursor:pointer;font-weight:500;flex-shrink:0;transition:all .2s;}
+  .trend-chip:hover{background:rgba(123,47,255,0.15);border-color:var(--p2);}
+
+  .feed{}
+  .post{background:var(--surface);border-bottom:1px solid var(--border);padding:16px;position:relative;}
+  .post-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--p1),var(--p3));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;position:relative;}
+  .verified{position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;background:var(--p1);border-radius:50%;border:1.5px solid var(--surface);display:flex;align-items:center;justify-content:center;font-size:8px;}
+  .post-meta{flex:1;}
+  .post-user{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;gap:4px;}
+  .post-handle{font-size:12px;color:var(--sub);}
+  .post-more{color:var(--sub);cursor:pointer;padding:4px;}
+  .post-text{font-size:14px;line-height:1.6;margin-bottom:12px;}
+  .post-tag{color:var(--p2);font-weight:500;}
+  .post-media{width:100%;border-radius:14px;overflow:hidden;margin-bottom:14px;position:relative;}
+  .post-media img{width:100%;display:block;}
+  .post-media-placeholder{width:100%;height:220px;background:linear-gradient(135deg,#1a0533,#2d1052,#1a0533);display:flex;align-items:center;justify-content:center;font-size:48px;border-radius:14px;margin-bottom:14px;position:relative;}
+  .post-media-placeholder .media-icon{position:absolute;bottom:10px;left:12px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;padding:3px 10px;border-radius:99px;backdrop-filter:blur(8px);}
+
+  /* POST ACTIONS - শুধু like, comment, save, share */
+  .post-actions{display:flex;align-items:center;justify-content:space-between;}
+  .act-btn{display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:10px;background:transparent;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;color:var(--sub);transition:all .2s;position:relative;}
+  .act-btn:hover{background:rgba(255,255,255,0.05);}
+  .act-btn.liked{color:#F472B6;}
+  .act-btn.saved{color:var(--p2);}
+  .act-btn .cnt{font-size:13px;font-weight:500;}
+  .act-spacer{flex:1;}
+
+  .reactions-popup{position:absolute;bottom:42px;left:0;background:var(--card);border:1px solid var(--border);border-radius:99px;padding:8px 14px;display:flex;gap:12px;z-index:50;box-shadow:0 8px 32px rgba(0,0,0,0.6);opacity:0;pointer-events:none;transition:all .25s cubic-bezier(0.34,1.56,0.64,1);transform:translateY(8px) scale(0.9);}
+  .reactions-popup.show{opacity:1;pointer-events:all;transform:translateY(0) scale(1);}
+  .reaction-btn{font-size:26px;cursor:pointer;transition:transform .2s;display:block;border:none;background:transparent;}
+  .reaction-btn:hover{transform:scale(1.5) translateY(-4px);}
+  .heart-burst{position:absolute;pointer-events:none;animation:burstAnim .9s ease forwards;}
+  @keyframes burstAnim{0%{transform:translate(-50%,-50%) scale(0);opacity:1;}100%{transform:translate(-50%,-50%) scale(3);opacity:0;}}
+
+  .suggest-section{padding:16px;background:var(--surface);border-bottom:1px solid var(--border);}
+  .suggest-list{display:flex;flex-direction:column;gap:14px;}
+  .suggest-item{display:flex;align-items:center;gap:10px;}
+  .s-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--p1),var(--p3));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .s-info{flex:1;}
+  .s-name{font-size:14px;font-weight:600;font-family:'Space Grotesk',sans-serif;}
+  .s-handle{font-size:12px;color:var(--sub);}
+  .follow-btn{padding:7px 18px;background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;border:none;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
+  .follow-btn:hover{opacity:.9;transform:scale(1.03);}
+  .follow-btn.following{background:var(--card);color:var(--sub);border:1px solid var(--border);}
+
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(13,13,20,0.95);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;padding:10px 0 24px;z-index:100;backdrop-filter:blur(20px);}
+  .nav-i{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:6px 16px;border-radius:12px;transition:all .2s;}
+  .nav-i>span{font-size:10px;color:var(--sub);font-weight:600;}
+  .nav-i.active>span{color:var(--p2);}
+  .nav-i svg path,.nav-i svg circle,.nav-i svg rect{transition:all .2s;}
+  .nav-post{width:46px;height:46px;background:linear-gradient(135deg,var(--p1),var(--p3));border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px var(--glow);cursor:pointer;transition:all .2s;margin-bottom:2px;}
+  .nav-post:hover{transform:scale(1.08);}
+  .splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:999;transition:opacity .6s;}
+  .splash-logo{width:80px;height:80px;background:linear-gradient(135deg,var(--p1),var(--p3));border-radius:24px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:44px;font-weight:800;color:#fff;animation:splashPulse 1.5s ease-in-out infinite;}
+  .splash-name{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;background:linear-gradient(90deg,var(--p1),var(--p3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .splash-tag{font-size:13px;color:var(--sub);}
+  @keyframes splashPulse{0%,100%{box-shadow:0 0 30px var(--glow);}50%{box-shadow:0 0 60px rgba(123,47,255,.6);transform:scale(1.05);}}
+  .hidden{display:none!important;}
+  .fade-out{opacity:0;pointer-events:none;}
+  /* SMOOTH PAGE TRANSITIONS */
+  body{animation:pageIn 0.35s ease;}
+  @keyframes pageIn{
+    from{opacity:0;transform:translateY(12px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+    .page-exit{
+    animation:pageOut 0.25s ease forwards;
+  }
+  @keyframes pageOut{
+    from{opacity:1;transform:translateY(0);}
+    to{opacity:0;transform:translateY(-10px);}
+  }
+</style>
+</head>
+<body>
+  <div class="splash" id="splash">
+    <div class="splash-logo">Q</div>
+    <div class="splash-name">Qvibe</div>
+    <div class="splash-tag">Feel the Vibe ✦</div>
+  </div>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div>
+      <div class="logo">Qvibe</div>
+      <div class="greeting" id="greetingText">Good evening, Kamrul ✨</div>
+    </div>
+    <div class="topbar-right">
+      <div class="notif-btn" onclick="window.location.href='explore.html'" style="position:relative;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#F0EEFF" stroke-width="1.8"/><path d="M21 21l-3.5-3.5" stroke="#F0EEFF" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <div class="notif-btn" onclick="window.location.href='notifications.html'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke="#F0EEFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="notif-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POST BOX -->
+  <div class="post-box" onclick="window.location.href='post.html'">
+    <div class="post-box-top">
+      <div class="post-avatar" id="postAvatar">😎</div>
+      <div class="post-placeholder">What's your vibe today? ✦</div>
+    </div>
+    <div class="post-box-btns">
+      <div class="post-type-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="#9B92B8" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.5" fill="#9B92B8"/><path d="M21 15l-5-5L5 21" stroke="#9B92B8" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Photo
+      </div>
+      <div class="post-type-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polygon points="23 7 16 12 23 17 23 7" stroke="#9B92B8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="#9B92B8" stroke-width="1.8"/></svg>
+        Video
+      </div>
+      <div class="post-type-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18V5l12-2v13" stroke="#9B92B8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" stroke="#9B92B8" stroke-width="1.8"/><circle cx="18" cy="16" r="3" stroke="#9B92B8" stroke-width="1.8"/></svg>
+        Music
+      </div>
+    </div>
+  </div>
+  <!-- STORIES -->
+  <div class="stories-section">
+    <div class="stories">
+      <div class="story story-add">
+        <div class="story-ring"><div class="story-inner">➕</div></div>
+        <span class="story-name">Your Story</span>
+      </div>
+      <div class="story"><div class="story-ring"><div class="story-inner">🎨</div></div><span class="story-name">Ariya</span></div>
+      <div class="story"><div class="story-ring"><div class="story-inner">🌙</div></div><span class="story-name">Zayan</span></div>
+      <div class="story"><div class="story-ring"><div class="story-inner">🔥</div></div><span class="story-name">Nova</span></div>
+      <div class="story"><div class="story-ring"><div class="story-inner">💜</div></div><span class="story-name">Rehan</span></div>
+      <div class="story"><div class="story-ring"><div class="story-inner">🎵</div></div><span class="story-name">Lina</span></div>
+    </div>
+  </div>
+
+  <!-- TRENDING -->
+  <div class="trending-section">
+    <div class="section-header">
+      <div class="section-title">Trending Vibes</div>
+      <div class="see-all">See all</div>
+    </div>
+    <div class="trend-chips">
+      <div class="trend-chip">#QvibeMoments</div>
+      <div class="trend-chip">#NightVibes</div>
+      <div class="trend-chip">#ArtDrop</div>
+      <div class="trend-chip">#FeelIt</div>
+      <div class="trend-chip">#PurpleSeason</div>
+    </div>
+  </div>
+
+  <!-- FEED -->
+  <div class="feed">
+
+    <!-- POST 1 -->
+    <div class="post">
+      <div class="reactions-popup" id="reactions1">
+        <button class="reaction-btn" onclick="setReaction(1,'❤️')">❤️</button>
+        <button class="reaction-btn" onclick="setReaction(1,'😮')">😮</button>
+        <button class="reaction-btn" onclick="setReaction(1,'🥰')">🥰</button>
+        <button class="reaction-btn" onclick="setReaction(1,'😂')">😂</button>
+        <button class="reaction-btn" onclick="setReaction(1,'👍')">👍</button>
+        <button class="reaction-btn" onclick="setReaction(1,'😡')">😡</button>
+      </div>
+      <div class="post-header">
+        <div class="avatar">🎨<div class="verified">✦</div></div>
+        <div class="post-meta">
+          <div class="post-user">Ariya Noor</div>
+          <div class="post-handle">@ariya · 3m ago</div>
+        </div>
+        <div class="post-more">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1" fill="#8B8BA7"/><circle cx="12" cy="12" r="1" fill="#8B8BA7"/><circle cx="12" cy="19" r="1" fill="#8B8BA7"/></svg>
+        </div>
+      </div>
+      <div class="post-text">New artwork just dropped ✨ Finally feels right. <span class="post-tag">#ArtDrop</span></div>
+      <div class="post-media-placeholder">🖼️<div class="media-icon">📸 Photo</div></div>
+      <div class="post-actions">
+        <!-- Like -->
+        <button class="act-btn" id="like1" ontouchstart="startHold(event,1)" ontouchend="endHold()" ontouchcancel="endHold()" onclick="toggleLike(1)">
+          <span id="likeemoji1" style="display:none;font-size:20px;">❤️</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" id="likesvg1"><path d="M12 21C12 21 3 15.5 3 9.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 9 2c0 6-9 12-9 12z" stroke="#8B8BA7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="cnt" id="likecnt1">2.4k</span>
+        </button>
+        <!-- Comment -->
+        <button class="act-btn" onclick="window.location.href='comments.html'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3C7 3 3 6.5 3 11c0 2.5 1.2 4.7 3 6.2V21l3.5-2c.8.2 1.6.3 2.5.3 5 0 9-3.5 9-8s-4-8-9-8z" stroke="#8B8BA7" stroke-width="1.8" stroke-linecap="round"/><path d="M8 11h.01M12 11h.01M16 11h.01" stroke="#8B8BA7" stroke-width="2.5" stroke-linecap="round"/></svg>
+          <span class="cnt">138</span>
+        </button>
+        <!-- Save -->
+        <button class="act-btn" id="save1" onclick="toggleSave(1)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" id="savesvg1"><path d="M17 3H7a2 2 0 0 0-2 2v16l7-3 7 3V5a2 2 0 0 0-2-2z" stroke="#8B8BA7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <!-- Share (Share Network icon) -->
+        <button class="act-btn" onclick="sharePost('Ariya Noor')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <circle cx="18" cy="5" r="3" stroke="#8B8BA7" stroke-width="1.8"/>
+            <circle cx="6" cy="12" r="3" stroke="#8B8BA7" stroke-width="1.8"/>
+            <circle cx="18" cy="19" r="3" stroke="#8B8BA7" stroke-width="1.8"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="#8B8BA7" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="#8B8BA7" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+        <!-- POST 2 -->
+    <div class="post">
+      <div class="reactions-popup" id="reactions2">
+        <button class="reaction-btn" onclick="setReaction(2,'❤️')">❤️</button>
+        <button class="reaction-btn" onclick="setReaction(2,'😮')">😮</button>
+        <button class="reaction-btn" onclick="setReaction(2,'🥰')">🥰</button>
+        <button class="reaction-btn" onclick="setReaction(2,'😂')">😂</button>
+        <button class="reaction-btn" onclick="setReaction(2,'👍')">👍</button>
+        <button class="reaction-btn" onclick="setReaction(2,'😡')">😡</button>
+      </div>
+      <div class="post-header">
+        <div class="avatar" style="background:linear-gradient(135deg,#0EA5E9,#7B2FFF)">🌙</div>
+        <div class="post-meta">
+          <div class="post-user">Zayan K.</div>
+          <div class="post-handle">@zayan_k · 18m ago</div>
+        </div>
+        <div class="post-more">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1" fill="#8B8BA7"/><circle cx="12" cy="12" r="1" fill="#8B8BA7"/><circle cx="12" cy="19" r="1" fill="#8B8BA7"/></svg>
+        </div>
+      </div>
+      <div class="post-text">Midnight thoughts hit different on Qvibe 🌙 Drop a ❤️ if you're awake. <span class="post-tag">#NightVibes</span></div>
+      <div class="post-actions">
+        <!-- Like -->
+        <button class="act-btn liked" id="like2" ontouchstart="startHold(event,2)" ontouchend="endHold()" ontouchcancel="endHold()" onclick="toggleLike(2)">
+          <span id="likeemoji2" style="font-size:20px;">❤️</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" id="likesvg2" style="display:none;"><path d="M12 21C12 21 3 15.5 3 9.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 9 2c0 6-9 12-9 12z" stroke="#F472B6" stroke-width="1.8" fill="rgba(244,114,182,0.2)" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="cnt" id="likecnt2">5.1k</span>
+        </button>
+        <!-- Comment -->
+        <button class="act-btn" onclick="window.location.href='comments.html'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3C7 3 3 6.5 3 11c0 2.5 1.2 4.7 3 6.2V21l3.5-2c.8.2 1.6.3 2.5.3 5 0 9-3.5 9-8s-4-8-9-8z" stroke="#8B8BA7" stroke-width="1.8" stroke-linecap="round"/><path d="M8 11h.01M12 11h.01M16 11h.01" stroke="#8B8BA7" stroke-width="2.5" stroke-linecap="round"/></svg>
+          <span class="cnt">310</span>
+        </button>
+        <!-- Save -->
+        <button class="act-btn" id="save2" onclick="toggleSave(2)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" id="savesvg2"><path d="M17 3H7a2 2 0 0 0-2 2v16l7-3 7 3V5a2 2 0 0 0-2-2z" stroke="#8B8BA7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <!-- Share (Share Network icon) -->
+        <button class="act-btn" onclick="sharePost('Zayan K.')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <circle cx="18" cy="5" r="3" stroke="#8B8BA7" stroke-width="1.8"/>
+            <circle cx="6" cy="12" r="3" stroke="#8B8BA7" stroke-width="1.8"/>
+            <circle cx="18" cy="19" r="3" stroke="#8B8BA7" stroke-width="1.8"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="#8B8BA7" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="#8B8BA7" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+<!-- SUGGEST -->
+    <div class="suggest-section">
+      <div class="section-header" style="margin-bottom:14px;">
+        <div class="section-title">People You May Know</div>
+      </div>
+      <div class="suggest-list">
+        <div class="suggest-item">
+          <div class="s-avatar" style="background:linear-gradient(135deg,#EC4899,#7B2FFF)">🔥</div>
+          <div class="s-info"><div class="s-name">Nova Hasan</div><div class="s-handle">@nova · 14.2k vibers</div></div>
+          <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+        </div>
+        <div class="suggest-item">
+          <div class="s-avatar" style="background:linear-gradient(135deg,#F59E0B,#A855F7)">🎵</div>
+          <div class="s-info"><div class="s-name">Lina Beats</div><div class="s-handle">@linabeats · 8.7k vibers</div></div>
+          <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- NAV -->
+  <div class="bottom-nav">
+    <div class="nav-i active" onclick="window.location.href='index.html'">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z" stroke="#A855F7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21V12h6v9" stroke="#A855F7" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="nav-i" onclick="window.location.href='reels.html'">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#8B8BA7" stroke-width="1.8"/><path d="M10 8.5l6 3.5-6 3.5V8.5z" stroke="#8B8BA7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Reels</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div class="nav-post" onclick="window.location.href='post.html'">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="nav-i" onclick="window.location.href='chat.html'">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#8B8BA7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Chat</span>
+    </div>
+    <div class="nav-i" onclick="window.location.href='profile.html'">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#8B8BA7" stroke-width="1.8"/><path d="M4 20c0-3.5 3.6-6 8-6s8 2.5 8 6" stroke="#8B8BA7" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span>Profile</span>
+    </div>
+  </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAWuYQ78mQ_FGBGXCZGftdtDXD8vJb8qPw",
+    authDomain: "qvibe-603af.firebaseapp.com",
+    projectId: "qvibe-603af",
+    storageBucket: "qvibe-603af.firebasestorage.app",
+    messagingSenderId: "798663915014",
+    appId: "1:798663915014:web:c014ff700269b4872af587"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, (user) => {
+    if(!user){
+      window.location.href = 'login.html';
+      return;
+    }
+
+    // Real নাম দেখাও
+    const name = user.displayName || user.email.split('@')[0];
+    const hour = new Date().getHours();
+    let greeting = 'Good morning';
+    if(hour >= 12 && hour < 17) greeting = 'Good afternoon';
+    else if(hour >= 17) greeting = 'Good evening';
+
+    document.getElementById('greetingText').textContent = greeting + ', ' + name + ' ✨';
+    document.getElementById('postAvatar').textContent = name.charAt(0).toUpperCase();
+  });
+</script>
+
+<script>
+  setTimeout(()=>{
+    const s=document.getElementById('splash');
+    s.classList.add('fade-out');
+    setTimeout(()=>s.classList.add('hidden'),600);
+  },500);
+
+  let audioCtx=null;
+  function getCtx(){
+    if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    return audioCtx;
+  }
+  document.addEventListener('touchstart',()=>getCtx(),{once:true});
+  document.addEventListener('click',()=>getCtx(),{once:true});
+
+  function playPopSound(){
+    try{
+      const ctx=getCtx();
+      const o=ctx.createOscillator();
+      const g=ctx.createGain();
+      o.type='sine';
+      o.frequency.setValueAtTime(600,ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(900,ctx.currentTime+0.05);
+      o.frequency.exponentialRampToValueAtTime(500,ctx.currentTime+0.12);
+      g.gain.setValueAtTime(0,ctx.currentTime);
+      g.gain.linearRampToValueAtTime(0.3,ctx.currentTime+0.02);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.2);
+      o.connect(g);g.connect(ctx.destination);
+      o.start(ctx.currentTime);o.stop(ctx.currentTime+0.2);
+    }catch(e){}
+  }
+let holdTimer=null;
+  let isHolding=false;
+  let holdPostId=null;
+  function startHold(e,id){
+    isHolding=false;
+    holdPostId=id;
+    holdTimer=setTimeout(()=>{
+      isHolding=true;
+      playPopSound();
+      hideAllReactions();
+      document.getElementById('reactions'+id).classList.add('show');
+    },500);
+  }
+  function endHold(){
+    clearTimeout(holdTimer);
+  }
+
+  function createBurst(btn,emoji){
+    for(let i=0;i<6;i++){
+      const h=document.createElement('span');
+      h.className='heart-burst';
+      h.textContent=emoji;
+      h.style.position='absolute';
+      h.style.left=(20+Math.random()*50)+'px';
+      h.style.top='0px';
+      h.style.fontSize=(12+Math.random()*8)+'px';
+      h.style.animationDelay=(Math.random()*0.25)+'s';
+      h.style.pointerEvents='none';
+      h.style.zIndex='99';
+      btn.appendChild(h);
+      setTimeout(()=>h.remove(),1000);
+    }
+  }
+
+  const likeCounts={1:2400,2:5100};
+  const likedPosts={1:false,2:true};
+  const savedPosts={1:false,2:false};
+  const reactionEmoji={1:'❤️',2:'❤️'};
+
+  function toggleLike(id){
+    if(isHolding){isHolding=false;return;}
+    const btn=document.getElementById('like'+id);
+    const svg=document.getElementById('likesvg'+id);
+    const emojiEl=document.getElementById('likeemoji'+id);
+    const cnt=document.getElementById('likecnt'+id);
+    likedPosts[id]=!likedPosts[id];
+    if(likedPosts[id]){
+      btn.classList.add('liked');
+      // simple like — show heart SVG, hide emoji
+      reactionEmoji[id]='❤️';
+      emojiEl.textContent='❤️';
+      emojiEl.style.display='none';
+      svg.style.display='block';
+      svg.querySelector('path').setAttribute('stroke','#F472B6');
+      svg.querySelector('path').setAttribute('fill','rgba(244,114,182,0.2)');
+      likeCounts[id]++;
+      playPopSound();
+      createBurst(btn,reactionEmoji[id]);
+    }else{
+      btn.classList.remove('liked');
+      emojiEl.style.display='none';
+      svg.style.display='block';
+      svg.querySelector('path').setAttribute('stroke','#8B8BA7');
+      svg.querySelector('path').setAttribute('fill','none');
+      likeCounts[id]--;
+    }
+    cnt.textContent=formatCount(likeCounts[id]);
+    hideAllReactions();
+  }
+    function sharePost(name){
+    if(navigator.share){
+      navigator.share({
+        title:'Qvibe',
+        text:'Check out this vibe from '+name+' on Qvibe! 💜',
+        url:window.location.href
+      });
+    } else {
+      alert('Link copied! 📋');
+    }
+  }
+
+  function hideAllReactions(){
+    document.querySelectorAll('.reactions-popup').forEach(r=>r.classList.remove('show'));
+  }
+
+  function setReaction(id,emoji){
+    reactionEmoji[id]=emoji;
+    const btn=document.getElementById('like'+id);
+    const svg=document.getElementById('likesvg'+id);
+    const emojiEl=document.getElementById('likeemoji'+id);
+    const cnt=document.getElementById('likecnt'+id);
+    if(!likedPosts[id]){
+      likedPosts[id]=true;
+      likeCounts[id]++;
+      cnt.textContent=formatCount(likeCounts[id]);
+    }
+    btn.classList.add('liked');
+    emojiEl.textContent=emoji;
+    emojiEl.style.display='block';
+    svg.style.display='none';
+    playPopSound();
+    createBurst(btn,emoji);
+    hideAllReactions();
+    isHolding=false;
+  }
+  function formatCount(n){if(n>=1000)return(n/1000).toFixed(1)+'k';return n;}
+  function toggleFollow(btn){
+    const f=btn.classList.contains('following');
+    btn.classList.toggle('following');
+    btn.textContent=f?'Follow':'Following';
+  }
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('.reactions-popup')&&!e.target.closest('.act-btn')){
+      hideAllReactions();
+    }
+  });
+
+  // Fix — reaction select করার পরে popup বন্ধ হবে না
+  document.addEventListener('touchend',e=>{
+    if(isHolding && e.target.closest('.act-btn')){
+      e.preventDefault();
+    }
+  },{ passive:false });
+
+  // SMOOTH NAVIGATION
+  function goTo(url){
+    document.body.classList.add('page-exit');
+    setTimeout(()=>{ window.location.href=url; }, 250);
+  }
+  // Override all navigation links
+  document.addEventListener('DOMContentLoaded',()=>{
+    document.querySelectorAll('[onclick]').forEach(el=>{
+      const oc=el.getAttribute('onclick');
+      if(oc&&oc.includes("location.href")){
+        const match=oc.match(/href='([^']+)'/);
+        if(match){
+          el.setAttribute('onclick',`goTo('${match[1]}')`);
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>

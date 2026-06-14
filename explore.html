@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qvibe – Explore</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@300;400;500;600&display=swap');
+  :root{
+    --p1:#7B2FFF;--p2:#A855F7;--p3:#C084FC;--glow:rgba(123,47,255,0.4);
+    --bg:#0A0A0F;--surface:#111118;--card:#18181F;--border:rgba(123,47,255,0.18);--text:#F0EEFF;--sub:#9B92B8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:100px;}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+  .topbar-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;}
+
+  .search-wrap{padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:57px;z-index:90;}
+  .search-box{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 16px;transition:border-color .2s;}
+  .search-box:focus-within{border-color:var(--p2);}
+  .search-box input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;}
+  .search-box input::placeholder{color:var(--sub);}
+
+  .categories{display:flex;gap:8px;padding:14px 16px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);}
+  .categories::-webkit-scrollbar{display:none;}
+  .cat-chip{padding:8px 16px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;transition:all .2s;border:1px solid var(--border);background:var(--card);color:var(--sub);}
+  .cat-chip.active{background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;border-color:transparent;box-shadow:0 4px 12px var(--glow);}
+
+  .section-wrap{padding:16px;}
+  .section-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;margin-bottom:14px;}
+
+  /* TRENDING TOPICS */
+  .trend-list{display:flex;flex-direction:column;gap:2px;margin-bottom:24px;}
+  .trend-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface);border-radius:12px;cursor:pointer;transition:background .2s;}
+  .trend-item:hover{background:var(--card);}
+  .trend-rank{font-size:13px;color:var(--sub);width:20px;text-align:center;}
+  .trend-info{flex:1;}
+  .trend-tag{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:var(--p3);}
+  .trend-count{font-size:12px;color:var(--sub);margin-top:2px;}
+  .trend-fire{font-size:18px;}
+
+  /* EXPLORE GRID */
+  .explore-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+  .explore-card{border-radius:16px;overflow:hidden;cursor:pointer;position:relative;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:42px;transition:transform .2s;}
+  .explore-card:hover{transform:scale(1.02);}
+  .explore-card:nth-child(1){background:linear-gradient(135deg,#1E0A40,var(--p1));grid-column:span 2;aspect-ratio:2/1;}
+  .explore-card:nth-child(2){background:linear-gradient(135deg,#0EA5E9,#7B2FFF);}
+  .explore-card:nth-child(3){background:linear-gradient(135deg,#F59E0B,#A855F7);}
+  .explore-card:nth-child(4){background:linear-gradient(135deg,#EC4899,#7B2FFF);}
+  .explore-card:nth-child(5){background:linear-gradient(135deg,#10B981,#7B2FFF);}
+  .card-label{position:absolute;bottom:0;left:0;right:0;padding:10px 12px;background:linear-gradient(transparent,rgba(0,0,0,.7));font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;}
+
+  /* PEOPLE */
+  .people-list{display:flex;flex-direction:column;gap:2px;}
+  .people-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface);border-radius:12px;cursor:pointer;}
+  .p-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--p1),var(--p3));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+  .p-info{flex:1;}
+  .p-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;}
+  .p-handle{font-size:12px;color:var(--sub);}
+  .follow-btn{padding:6px 16px;background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
+  .follow-btn.following{background:var(--card);color:var(--sub);border:1px solid var(--border);}
+
+  /* FLOATING NAV */
+  .bottom-nav{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);width:calc(100% - 40px);max-width:420px;background:rgba(17,17,24,0.6);backdrop-filter:blur(24px);border:1px solid rgba(123,47,255,0.25);border-radius:28px;display:flex;justify-content:space-around;align-items:center;padding:10px 8px;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,0.4);}
+  .nav-item{display:flex;flex-direction:column;align-items:center;cursor:pointer;padding:8px 14px;border-radius:18px;transition:all .3s cubic-bezier(0.34,1.56,0.64,1);}
+  .nav-icon{font-size:22px;filter:grayscale(1) opacity(0.5);transition:all .3s;}
+  .nav-item.active .nav-icon{filter:grayscale(0) opacity(1);transform:translateY(-3px) scale(1.15);}
+  .nav-item.active{background:rgba(123,47,255,0.18);}
+  .nav-glow{width:5px;height:5px;background:var(--p2);border-radius:50%;margin-top:3px;opacity:0;transition:opacity .3s;}
+  .nav-item.active .nav-glow{opacity:1;animation:glowPulse 2s ease-in-out infinite;}
+  .nav-post-btn{width:50px;height:50px;background:linear-gradient(135deg,var(--p1),var(--p3));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;cursor:pointer;box-shadow:0 4px 20px var(--glow);transition:all .3s;margin-top:-6px;}
+  .nav-post-btn:hover{transform:scale(1.12) translateY(-4px);}
+  @keyframes glowPulse{0%,100%{box-shadow:0 0 6px var(--p2);}50%{box-shadow:0 0 16px var(--p1);}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-title">Explore</div>
+</div>
+
+<div class="search-wrap">
+  <div class="search-box">
+    <span>🔍</span>
+    <input type="text" placeholder="Search people, vibes, tags...">
+  </div>
+</div>
+
+<div class="categories">
+  <div class="cat-chip active">✦ All</div>
+  <div class="cat-chip">🎨 Art</div>
+  <div class="cat-chip">🎵 Music</div>
+  <div class="cat-chip">🔥 Trending</div>
+  <div class="cat-chip">🌙 Night</div>
+  <div class="cat-chip">✨ Vibes</div>
+  <div class="cat-chip">🌿 Nature</div>
+</div>
+
+<div class="section-wrap">
+  <div class="section-title">🔥 Trending Topics</div>
+  <div class="trend-list">
+    <div class="trend-item">
+      <span class="trend-rank">1</span>
+      <div class="trend-info"><div class="trend-tag">#QvibeMoments</div><div class="trend-count">48.2k posts</div></div>
+      <span class="trend-fire">🔥</span>
+    </div>
+    <div class="trend-item">
+      <span class="trend-rank">2</span>
+      <div class="trend-info"><div class="trend-tag">#NightVibes</div><div class="trend-count">31.7k posts</div></div>
+      <span class="trend-fire">🌙</span>
+    </div>
+    <div class="trend-item">
+      <span class="trend-rank">3</span>
+      <div class="trend-info"><div class="trend-tag">#ArtDrop</div><div class="trend-count">22.4k posts</div></div>
+      <span class="trend-fire">🎨</span>
+    </div>
+    <div class="trend-item">
+      <span class="trend-rank">4</span>
+      <div class="trend-info"><div class="trend-tag">#PurpleSeason</div><div class="trend-count">18.9k posts</div></div>
+      <span class="trend-fire">💜</span>
+    </div>
+    <div class="trend-item">
+      <span class="trend-rank">5</span>
+      <div class="trend-info"><div class="trend-tag">#FeelIt</div><div class="trend-count">14.1k posts</div></div>
+      <span class="trend-fire">✨</span>
+    </div>
+  </div>
+
+  <div class="section-title">✦ Explore Vibes</div>
+  <div class="explore-grid" style="margin-bottom:24px;">
+    <div class="explore-card">🌌<div class="card-label">Night Vibes</div></div>
+    <div class="explore-card">🎨<div class="card-label">Art Drop</div></div>
+    <div class="explore-card">🎵<div class="card-label">Music</div></div>
+    <div class="explore-card">🔥<div class="card-label">Trending</div></div>
+    <div class="explore-card">🌿<div class="card-label">Nature</div></div>
+  </div>
+
+  <div class="section-title">👥 People to Follow</div>
+  <div class="people-list">
+    <div class="people-item">
+      <div class="p-avatar">🎨</div>
+      <div class="p-info"><div class="p-name">Ariya Noor</div><div class="p-handle">@ariya · 14.2k vibers</div></div>
+      <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+    </div>
+    <div class="people-item">
+      <div class="p-avatar" style="background:linear-gradient(135deg,#0EA5E9,#7B2FFF)">🌙</div>
+      <div class="p-info"><div class="p-name">Zayan K.</div><div class="p-handle">@zayan_k · 9.8k vibers</div></div>
+      <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+    </div>
+    <div class="people-item">
+      <div class="p-avatar" style="background:linear-gradient(135deg,#F59E0B,#A855F7)">🎵</div>
+      <div class="p-info"><div class="p-name">Lina Beats</div><div class="p-handle">@linabeats · 8.7k vibers</div></div>
+      <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-item" onclick="window.location.href='index.html'">
+    <span class="nav-icon">🏠</span><div class="nav-glow"></div>
+  </div>
+  <div class="nav-item active">
+    <span class="nav-icon">🔍</span><div class="nav-glow"></div>
+  </div>
+  <div class="nav-item">
+    <div class="nav-post-btn" onclick="window.location.href='post.html'">✦</div>
+  </div>
+  <div class="nav-item" onclick="window.location.href='chat.html'">
+    <span class="nav-icon">💬</span><div class="nav-glow"></div>
+  </div>
+  <div class="nav-item" onclick="window.location.href='profile.html'">
+    <span class="nav-icon">👤</span><div class="nav-glow"></div>
+  </div>
+</div>
+
+<script>
+  function toggleFollow(btn){
+    const f=btn.classList.contains('following');
+    btn.classList.toggle('following');
+    btn.textContent=f?'Follow':'Following';
+  }
+  document.querySelectorAll('.cat-chip').forEach(c=>{
+    c.addEventListener('click',()=>{
+      document.querySelectorAll('.cat-chip').forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

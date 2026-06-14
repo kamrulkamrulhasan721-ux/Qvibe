@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qvibe – Edit Profile</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@300;400;500;600&display=swap');
+  :root{
+    --p1:#7B2FFF;--p2:#A855F7;--p3:#C084FC;--glow:rgba(123,47,255,0.4);
+    --bg:#0A0A0F;--surface:#111118;--card:#18181F;--border:rgba(123,47,255,0.18);--text:#F0EEFF;--sub:#9B92B8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:40px;}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+  .back-btn{font-size:22px;cursor:pointer;}
+  .topbar-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;}
+  .save-btn{padding:8px 20px;background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px var(--glow);}
+
+  /* AVATAR */
+  .avatar-section{display:flex;flex-direction:column;align-items:center;padding:24px 16px;border-bottom:1px solid var(--border);}
+  .avatar-wrap{position:relative;cursor:pointer;}
+  .avatar{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--p1),var(--p3));display:flex;align-items:center;justify-content:center;font-size:42px;box-shadow:0 0 0 3px var(--p2);}
+  .avatar-edit{position:absolute;bottom:0;right:0;width:28px;height:28px;background:var(--p1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid var(--bg);}
+  .avatar-text{font-size:13px;color:var(--p3);margin-top:10px;font-weight:600;}
+
+  /* COVER */
+  .cover-section{margin:16px;border-radius:16px;overflow:hidden;position:relative;cursor:pointer;}
+  .cover{width:100%;height:100px;background:linear-gradient(135deg,#1E0A40,var(--p1),#3B0764);display:flex;align-items:center;justify-content:center;}
+  .cover-edit-btn{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.5);color:#fff;font-size:12px;padding:4px 12px;border-radius:99px;backdrop-filter:blur(8px);}
+
+  /* FORM */
+  .form-section{padding:0 16px;}
+  .form-group{margin-bottom:20px;}
+  .form-label{font-size:12px;color:var(--sub);font-weight:600;margin-bottom:8px;display:block;text-transform:uppercase;letter-spacing:.5px;}
+  .input-wrap{position:relative;}
+  .input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;}
+  input,textarea{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 14px 14px 42px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .3s;}
+  textarea{padding:14px;min-height:90px;resize:none;line-height:1.6;}
+  input:focus,textarea:focus{border-color:var(--p2);box-shadow:0 0 0 3px rgba(123,47,255,0.15);}
+  input::placeholder,textarea::placeholder{color:var(--sub);}
+
+  .char-count{text-align:right;font-size:11px;color:var(--sub);margin-top:4px;}
+
+  /* DIVIDER */
+  .section-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:var(--sub);padding:16px 0 10px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="back-btn" onclick="window.location.href='settings.html'">←</div>
+  <div class="topbar-title">Edit Profile</div>
+  <button class="save-btn" onclick="saveProfile()">Save ✦</button>
+</div>
+
+<!-- COVER -->
+<div class="cover-section">
+  <div class="cover">🌌</div>
+  <div class="cover-edit-btn">✏️ Edit Cover</div>
+</div>
+
+<!-- AVATAR -->
+<div class="avatar-section">
+  <div class="avatar-wrap">
+    <div class="avatar">😎</div>
+    <div class="avatar-edit">📷</div>
+  </div>
+  <div class="avatar-text">Change Profile Photo</div>
+</div>
+
+<!-- FORM -->
+<div class="form-section">
+
+  <div class="section-title">Basic Info</div>
+
+  <div class="form-group">
+    <label class="form-label">Full Name</label>
+    <div class="input-wrap">
+      <span class="input-icon">👤</span>
+      <input type="text" id="nameInput" placeholder="Your full name" value="Your Name" oninput="countChars('nameInput','nameCount',50)">
+    </div>
+    <div class="char-count"><span id="nameCount">9</span>/50</div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Username</label>
+    <div class="input-wrap">
+      <span class="input-icon">✦</span>
+      <input type="text" id="userInput" placeholder="@username" value="yourname" oninput="countChars('userInput','userCount',30)">
+    </div>
+    <div class="char-count"><span id="userCount">8</span>/30</div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Bio</label>
+    <textarea id="bioInput" placeholder="Tell your vibe... ✦" oninput="countChars('bioInput','bioCount',150)">Living the vibe 💜 Creator • Dreamer • Explorer</textarea>
+    <div class="char-count"><span id="bioCount">48</span>/150</div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Website</label>
+    <div class="input-wrap">
+      <span class="input-icon">🔗</span>
+      <input type="url" placeholder="yourwebsite.com">
+    </div>
+  </div>
+
+  <div class="section-title">Personal Info</div>
+
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <div class="input-wrap">
+      <span class="input-icon">📧</span>
+      <input type="email" placeholder="you@email.com" value="you@email.com">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Phone</label>
+    <div class="input-wrap">
+      <span class="input-icon">📱</span>
+      <input type="tel" placeholder="+880 1X XX XXX XXX">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Gender</label>
+    <div class="input-wrap">
+      <span class="input-icon">👥</span>
+      <input type="text" placeholder="Prefer not to say">
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function countChars(inputId, countId, max){
+    const len = document.getElementById(inputId).value.length;
+    document.getElementById(countId).textContent = len;
+  }
+  function saveProfile(){
+    alert('Profile saved! 💜');
+    window.location.href='profile.html';
+  }
+</script>
+</body>
+</html> 

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qvibe – Reels</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+  :root{
+    --p1:#7B2FFF;--p2:#A855F7;--p3:#C084FC;--glow:rgba(123,47,255,0.4);
+    --bg:#000;--surface:#111118;--card:#1A1A28;--border:rgba(255,255,255,0.08);--text:#F0EEFF;--sub:#8B8BA7;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:#000;color:#fff;height:100vh;overflow:hidden;}
+
+  /* PAGE TRANSITION */
+  body{animation:pageIn 0.35s ease;}
+  @keyframes pageIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+  .page-exit{animation:pageOut 0.25s ease forwards;}
+  @keyframes pageOut{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(-10px);}}
+
+  /* REELS CONTAINER */
+  .reels-container{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;}
+  .reels-container::-webkit-scrollbar{display:none;}
+
+  /* SINGLE REEL */
+  .reel{height:100vh;width:100%;scroll-snap-align:start;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+
+  /* VIDEO BG */
+  .reel-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:120px;background:linear-gradient(135deg,#0D0D14,#1a0533,#0D0D14);}
+  .reel-bg.r1{background:linear-gradient(135deg,#0a0020,#2d1052,#1a0533);}
+  .reel-bg.r2{background:linear-gradient(135deg,#001a2d,#0EA5E9,#1a0533);}
+  .reel-bg.r3{background:linear-gradient(135deg,#1a0015,#EC4899,#2d0052);}
+  .reel-bg.r4{background:linear-gradient(135deg,#0a1a00,#10B981,#001a2d);}
+  .reel-bg.r5{background:linear-gradient(135deg,#1a1000,#F59E0B,#2d1052);}
+
+  /* GRADIENT OVERLAY */
+  .reel-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.8) 0%,transparent 40%,transparent 70%,rgba(0,0,0,0.3) 100%);}
+
+  /* TOPBAR */
+  .reel-topbar{position:absolute;top:0;left:0;right:0;padding:50px 20px 16px;display:flex;justify-content:space-between;align-items:center;z-index:10;}
+  .reel-title{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;}
+  .reel-tabs{display:flex;gap:20px;}
+  .reel-tab{font-size:15px;font-weight:600;color:rgba(255,255,255,0.6);cursor:pointer;padding-bottom:4px;}
+  .reel-tab.active{color:#fff;border-bottom:2px solid #fff;}
+
+  /* BOTTOM INFO */
+  .reel-info{position:absolute;bottom:90px;left:16px;right:80px;z-index:10;}
+  .reel-user{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .reel-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--p1),var(--p3));display:flex;align-items:center;justify-content:center;font-size:18px;border:2px solid #fff;}
+  .reel-username{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;}
+  .reel-follow{padding:4px 14px;background:transparent;border:1.5px solid #fff;border-radius:99px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;margin-left:8px;transition:all .2s;}
+  .reel-follow.following{background:rgba(255,255,255,0.2);}
+  .reel-caption{font-size:14px;line-height:1.5;margin-bottom:8px;}
+  .reel-tag{color:var(--p3);}
+  .reel-audio{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.8);}
+  .reel-audio-icon{width:28px;height:28px;background:linear-gradient(135deg,var(--p1),var(--p3));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;animation:spin 3s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+/* RIGHT ACTIONS */
+  .reel-actions{position:absolute;bottom:100px;right:12px;display:flex;flex-direction:column;align-items:center;gap:20px;z-index:10;}
+  .reel-action{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
+  .reel-action-icon{width:44px;height:44px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);transition:all .2s;border:1px solid rgba(255,255,255,0.1);}
+  .reel-action-icon:hover{background:rgba(255,255,255,0.25);transform:scale(1.1);}
+  .reel-action-icon.liked{background:rgba(244,114,182,0.3);border-color:rgba(244,114,182,0.5);}
+  .reel-action span{font-size:11px;color:rgba(255,255,255,0.9);font-weight:600;}
+
+  /* PROGRESS BAR */
+  .reel-progress{position:absolute;top:0;left:0;right:0;height:2px;background:rgba(255,255,255,0.2);z-index:20;}
+  .reel-progress-fill{height:100%;background:linear-gradient(90deg,var(--p1),var(--p3));animation:progress 8s linear infinite;}
+  @keyframes progress{from{width:0%;}to{width:100%;}}
+
+  /* PLAY/PAUSE */
+  .play-indicator{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70px;height:70px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;opacity:0;transition:opacity .3s;z-index:15;backdrop-filter:blur(10px);}
+  .play-indicator.show{opacity:1;}
+
+  /* SHARE POPUP */
+  .share-popup{position:fixed;bottom:-100%;left:0;right:0;background:var(--card);border-radius:24px 24px 0 0;padding:20px;z-index:100;transition:bottom .3s cubic-bezier(0.34,1.56,0.64,1);border-top:1px solid var(--border);}
+  .share-popup.show{bottom:0;}
+  .share-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;text-align:center;}
+  .share-options{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:8px;}
+  .share-options::-webkit-scrollbar{display:none;}
+  .share-opt{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;}
+  .share-opt-icon{width:52px;height:52px;border-radius:16px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid var(--border);}
+  .share-opt span{font-size:11px;color:var(--sub);}
+
+  /* OVERLAY */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;display:none;}
+  .overlay.show{display:block;}
+
+  /* NAV */
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.8);border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-around;align-items:center;padding:10px 0 24px;z-index:50;backdrop-filter:blur(20px);}
+  .nav-i{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:6px 16px;border-radius:12px;transition:all .2s;}
+  .nav-i>span{font-size:10px;color:rgba(255,255,255,0.4);font-weight:600;}
+  .nav-i.active>span{color:var(--p2);}
+  .nav-post{width:46px;height:46px;background:linear-gradient(135deg,var(--p1),var(--p3));border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px var(--glow);cursor:pointer;transition:all .2s;margin-bottom:2px;}
+  .nav-post:hover{transform:scale(1.08);}
+</style>
+</head>
+<body>
+
+<!-- SHARE OVERLAY -->
+<div class="overlay" id="overlay" onclick="hideShare()"></div>
+
+<!-- SHARE POPUP -->
+<div class="share-popup" id="sharePopup">
+  <div class="share-title">Share Reel 📤</div>
+  <div class="share-options">
+    <div class="share-opt">
+      <div class="share-opt-icon">💬</div>
+      <span>Chat</span>
+    </div>
+    <div class="share-opt">
+      <div class="share-opt-icon">📋</div>
+      <span>Copy Link</span>
+    </div>
+    <div class="share-opt">
+      <div class="share-opt-icon">📲</div>
+      <span>Share</span>
+    </div>
+    <div class="share-opt">
+      <div class="share-opt-icon">⬇️</div>
+      <span>Save</span>
+    </div>
+    <div class="share-opt">
+      <div class="share-opt-icon">🚩</div>
+      <span>Report</span>
+    </div>
+  </div>
+</div>
+<!-- REELS -->
+<div class="reels-container" id="reelsContainer">
+
+  <!-- REEL 1 -->
+  <div class="reel" id="reel1" onclick="togglePlay(1)">
+    <div class="reel-progress"><div class="reel-progress-fill"></div></div>
+    <div class="reel-bg r1">🌌</div>
+    <div class="reel-overlay"></div>
+    <div class="play-indicator" id="play1">⏸️</div>
+
+    <div class="reel-topbar">
+      <div class="reel-tabs">
+        <div class="reel-tab" onclick="goTo('index.html');event.stopPropagation()">Following</div>
+        <div class="reel-tab active">For You</div>
+      </div>
+      <div onclick="goTo('explore.html');event.stopPropagation()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="1.8"/><path d="M21 21l-3.5-3.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+
+    <div class="reel-info">
+      <div class="reel-user">
+        <div class="reel-avatar">🎨</div>
+        <div class="reel-username">Ariya Noor</div>
+        <button class="reel-follow" onclick="toggleFollow(this);event.stopPropagation()">Follow</button>
+      </div>
+      <div class="reel-caption">Night vibes only 🌙✨ The city never sleeps and neither do I <span class="reel-tag">#NightVibes</span> <span class="reel-tag">#QvibeMoments</span></div>
+      <div class="reel-audio">
+        <div class="reel-audio-icon">🎵</div>
+        <span>Original Audio — Ariya Noor</span>
+      </div>
+    </div>
+
+    <div class="reel-actions" onclick="event.stopPropagation()">
+      <div class="reel-action" onclick="toggleReelLike(this,1)">
+        <div class="reel-action-icon" id="reelLike1">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 21C12 21 3 15.5 3 9.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 9 2c0 6-9 12-9 12z" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <span id="reelLikeCnt1">24.5k</span>
+      </div>
+      <div class="reel-action" onclick="goTo('comments.html')">
+        <div class="reel-action-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3C7 3 3 6.5 3 11c0 2.5 1.2 4.7 3 6.2V21l3.5-2c.8.2 1.6.3 2.5.3 5 0 9-3.5 9-8s-4-8-9-8z" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <span>1.2k</span>
+      </div>
+      <div class="reel-action" onclick="showShare()">
+        <div class="reel-action-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span>Share</span>
+      </div>
+      <div class="reel-action" onclick="toggleReelSave(this)">
+        <div class="reel-action-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M17 3H7a2 2 0 0 0-2 2v16l7-3 7 3V5a2 2 0 0 0-2-2z" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <span>Save</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- REEL 2 -->
+  <div class="reel" id="reel2" onclick="togglePlay(2)">
+    <div class="reel-progress"><div class="reel-progress-fill"></div></div>
+    <div class="reel-bg r2">🌊</div>
+    <div class="reel-overlay"></div>
+    <div class="play-indicator" id="play2">⏸️</div>
+
+    <div class="reel-topbar">
+      <div class="reel-tabs">
+        <div class="reel-tab" onclick="goTo('index.html');event.stopPropagation()">Following</div>
+        <div class="reel-tab active">For You</div>
+      </div>
+      <div onclick="goTo('explore.html');event.stopPropagation()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="1.8"/><path d="M21 21l-3.5-3.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+
+    <div class="reel-info">
+      <div class="reel-user">
+        <div class="reel-avatar" style="background:linear-gradient(135deg,#0EA5E9,#7B2FFF)">🌙</div>
+        <div class="reel-username">Zayan K.</div>
+        <button class="reel-follow" onclick="toggleFollow(this);event.stopPropagation()">Follow</button>
+      </div>
+      <div class="reel-caption">Ocean waves + midnight music = pure vibe 🌊🎵 <span class="reel-tag">#OceanVibes</span> <span class="reel-tag">#FeelIt</span></div>
+      <div class="reel-audio">
+        <div class="reel-audio-icon">🎵</div>
+        <span>Midnight Waves — Zayan K.</span>
+      </div>
+    </div>
+        <div class="reel-actions" onclick="event.stopPropagation()">
+      <div class="reel-action" onclick="toggleReelLike(this,2)">
+        <div class="reel-action-icon" id="reelLike2">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 21C12 21 3 15.5 3 9.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 9 2c0 6-9 12-9 12z" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <span id="reelLikeCnt2">18.2k</span>
+      </div>
+      <div class="reel-action" onclick="goTo('comments.html')">
+        <div class="reel-action-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3C7 3 3 6.5 3 11c0 2.5 1.2 4.7 3 6.2V21l3.5-2c.8.2 1.6.3 2.5.3 5 0 9-3.5 9-8s-4-8-9-8z" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <span>856</span>
+      </div>
+      <div class="reel-action" onclick="showShare()">
+        <div class="reel-action-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span>Share</span>
+      </div>
+      <div class="reel-action" onclick="toggleReelSave(this)">
+        <div class="reel-action-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M17 3H7a2 2 0 0 0-2 2v16l7-3 7 3V5a2 2 0 0 0-2-2z" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <span>Save</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- REEL 3 -->
+  <div class="reel" id="reel3" onclick="togglePlay(3)">
+    <div class="reel-progress"><div class="reel-progress-fill"></div></div>
+    <div class="reel-bg r3">🔥</div>
+    <div class="reel-overlay"></div>
+    <div class="play-indicator" id="play3">⏸️</div>
+
+    <div class="reel-topbar">
+      <div class="reel-tabs">
+        <div class="reel-tab" onclick="goTo('index.html');event.stopPropagation()">Following</div>
+        <div class="reel-tab active">For You</div>
+      </div>
+      <div onclick="goTo('explore.html');event.stopPropagation()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="1.8"/><path d="M21 21l-3.5-3.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+
+    <div class="reel-info">
+      <div class="reel-user">
+        <div class="reel-avatar" style="background:linear-gradient(135deg,#EC4899,#7B2FFF)">🔥</div>
+        <div class="reel-username">Nova Hasan</div>
+        <button class="reel-follow following" onclick="toggleFollow(this);event.stopPropagation()">Following</button>
+      </div>
+      <div class="reel-caption">This fire track got me moving all night 🔥💃 <span class="reel-tag">#ArtDrop</span> <span class="reel-tag">#PurpleSeason</span></div>
+      <div class="reel-audio">
+        <div class="reel-audio-icon">🎵</div>
+        <span>Fire Season — Nova Hasan</span>
+      </div>
+    </div>
+
+    <div class="reel-actions" onclick="event.stopPropagation()">
+      <div class="reel-action" onclick="toggleReelLike(this,3)">
+        <div class="reel-action-icon liked" id="reelLike3">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 21C12 21 3 15.5 3 9.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 9 2c0 6-9 12-9 12z" stroke="#F472B6" stroke-width="1.8" fill="rgba(244,114,182,0.3)" stroke-linecap="round"/></svg>
+        </div>
+        <span id="reelLikeCnt3">31.8k</span>
+      </div>
+      <div class="reel-action" onclick="goTo('comments.html')">
+        <div class="reel-action-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3C7 3 3 6.5 3 11c0 2.5 1.2 4.7 3 6.2V21l3.5-2c.8.2 1.6.3 2.5.3 5 0 9-3.5 9-8s-4-8-9-8z" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <span>2.4k</span>
+      </div>
+      <div class="reel-action" onclick="showShare()">
+        <div class="reel-action-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span>Share</span>
+      </div>
+      <div class="reel-action" onclick="toggleReelSave(this)">
+        <div class="reel-action-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M17 3H7a2 2 0 0 0-2 2v16l7-3 7 3V5a2 2 0 0 0-2-2z" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <span>Save</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<div class="bottom-nav">
+  <div class="nav-i" onclick="goTo('index.html')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21V12h6v9" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span>Home</span>
+  </div>
+  <div class="nav-i" onclick="goTo('explore.html')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="rgba(255,255,255,0.4)" stroke-width="1.8"/><path d="M21 21l-3.5-3.5" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span>Discover</span>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+    <div class="nav-post" onclick="goTo('post.html')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+    </div>
+  </div>
+  <div class="nav-i" onclick="goTo('chat.html')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Chat</span>
+  </div>
+  <div class="nav-i" onclick="goTo('profile.html')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="rgba(255,255,255,0.4)" stroke-width="1.8"/><path d="M4 20c0-3.5 3.6-6 8-6s8 2.5 8 6" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span>Profile</span>
+  </div>
+</div>
+
+<script>
+  // SMOOTH NAV
+  function goTo(url){
+    document.body.classList.add('page-exit');
+    setTimeout(()=>{ window.location.href=url; },250);
+  }
+
+  // PLAY/PAUSE
+  const playing={1:true,2:true,3:true};
+  function togglePlay(id){
+    playing[id]=!playing[id];
+    const indicator=document.getElementById('play'+id);
+    indicator.textContent=playing[id]?'⏸️':'▶️';
+    indicator.classList.add('show');
+    setTimeout(()=>indicator.classList.remove('show'),800);
+  }
+
+  // LIKE
+  const reelLiked={1:false,2:false,3:true};
+  const reelCounts={1:24500,2:18200,3:31800};
+  function toggleReelLike(wrapper,id){
+    const icon=document.getElementById('reelLike'+id);
+    const cnt=document.getElementById('reelLikeCnt'+id);
+    reelLiked[id]=!reelLiked[id];
+    if(reelLiked[id]){
+      icon.classList.add('liked');
+      icon.querySelector('path').setAttribute('stroke','#F472B6');
+      icon.querySelector('path').setAttribute('fill','rgba(244,114,182,0.3)');
+      reelCounts[id]++;
+    }else{
+      icon.classList.remove('liked');
+      icon.querySelector('path').setAttribute('stroke','#fff');
+      icon.querySelector('path').setAttribute('fill','none');
+      reelCounts[id]--;
+    }
+    cnt.textContent=formatCount(reelCounts[id]);
+  }
+
+  // SAVE
+  function toggleReelSave(wrapper){
+    const icon=wrapper.querySelector('.reel-action-icon');
+    icon.classList.toggle('liked');
+    const path=icon.querySelector('path');
+    if(icon.classList.contains('liked')){
+      path.setAttribute('stroke','#A855F7');
+      path.setAttribute('fill','rgba(168,85,247,0.3)');
+    }else{
+      path.setAttribute('stroke','#fff');
+      path.setAttribute('fill','none');
+    }
+  }
+
+  // FOLLOW
+  function toggleFollow(btn){
+    const f=btn.classList.contains('following');
+    btn.classList.toggle('following');
+    btn.textContent=f?'Follow':'Following';
+  }
+
+  // SHARE
+  function showShare(){
+    document.getElementById('sharePopup').classList.add('show');
+    document.getElementById('overlay').classList.add('show');
+  }
+  function hideShare(){
+    document.getElementById('sharePopup').classList.remove('show');
+    document.getElementById('overlay').classList.remove('show');
+  }
+
+  function formatCount(n){
+    if(n>=1000) return(n/1000).toFixed(1)+'k';
+    return n;
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown',e=>{
+    const container=document.getElementById('reelsContainer');
+    if(e.key==='ArrowDown') container.scrollBy({top:window.innerHeight,behavior:'smooth'});
+    if(e.key==='ArrowUp') container.scrollBy({top:-window.innerHeight,behavior:'smooth'});
+  });
+</script>
+</body>
+</html>

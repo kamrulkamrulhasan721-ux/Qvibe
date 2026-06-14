@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qvibe – New Post</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@300;400;500;600&display=swap');
+  :root{
+    --p1:#7B2FFF;--p2:#A855F7;--p3:#C084FC;--glow:rgba(123,47,255,0.4);
+    --bg:#0A0A0F;--surface:#111118;--card:#18181F;--border:rgba(123,47,255,0.18);--text:#F0EEFF;--sub:#9B92B8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:40px;}
+
+  /* TOPBAR */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+  .back-btn{font-size:22px;cursor:pointer;}
+  .topbar-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;}
+  .post-btn{padding:8px 20px;background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 4px 12px var(--glow);transition:all .2s;}
+  .post-btn:hover{opacity:.9;transform:scale(1.04);}
+
+  /* POST TYPE TABS */
+  .type-tabs{display:flex;gap:8px;padding:14px 16px;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+  .type-tabs::-webkit-scrollbar{display:none;}
+  .type-tab{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;transition:all .2s;border:1px solid var(--border);background:var(--card);color:var(--sub);}
+  .type-tab.active{background:rgba(123,47,255,0.2);border-color:var(--p2);color:var(--p2);}
+
+  /* MEDIA UPLOAD */
+  .media-section{padding:16px;}
+  .media-upload{width:100%;height:200px;background:var(--card);border:2px dashed var(--border);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:all .3s;}
+  .media-upload:hover{border-color:var(--p2);background:rgba(123,47,255,0.05);}
+  .upload-icon{font-size:40px;}
+  .upload-text{font-size:14px;color:var(--sub);}
+  .upload-sub{font-size:12px;color:var(--sub);opacity:.6;}
+
+  .media-options{display:flex;gap:10px;margin-top:12px;}
+  .media-opt{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:13px;cursor:pointer;transition:all .2s;}
+  .media-opt:hover{border-color:var(--p2);color:var(--p2);}
+
+  /* TEXT AREA */
+  .text-section{padding:0 16px 16px;}
+  .user-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--p1),var(--p3));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .user-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;}
+  textarea{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-size:15px;font-family:'Inter',sans-serif;resize:none;line-height:1.6;min-height:100px;}
+  textarea::placeholder{color:var(--sub);}
+
+  /* DIVIDER */
+  .divider{height:1px;background:var(--border);margin:0 16px;}
+
+  /* ADD ONS */
+  .addons{padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
+  .addon-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;}
+  .addon-item:hover{border-color:var(--p2);}
+  .addon-icon{font-size:20px;}
+  .addon-info{flex:1;}
+  .addon-title{font-size:14px;font-weight:600;}
+  .addon-sub{font-size:12px;color:var(--sub);}
+  .addon-arrow{font-size:16px;color:var(--sub);}
+
+  /* CHAR COUNT */
+  .char-count{text-align:right;font-size:12px;color:var(--sub);padding:0 16px 8px;}
+
+  /* AUDIENCE */
+  .audience-wrap{padding:0 16px 16px;}
+  .audience-btn{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:10px;font-size:13px;cursor:pointer;width:fit-content;}
+  .audience-btn span{color:var(--p3);font-weight:600;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="back-btn" onclick="history.back()">✕</div>
+  <div class="topbar-title">New Vibe</div>
+  <button class="post-btn" onclick="submitPost()">Post ✦</button>
+</div>
+
+<!-- POST TYPE -->
+<div class="type-tabs">
+  <div class="type-tab active" onclick="setType(this)">✦ Vibe</div>
+  <div class="type-tab" onclick="setType(this)">📸 Photo</div>
+  <div class="type-tab" onclick="setType(this)">🎥 Video</div>
+  <div class="type-tab" onclick="setType(this)">🎵 Music</div>
+  <div class="type-tab" onclick="setType(this)">📊 Poll</div>
+</div>
+
+<!-- MEDIA UPLOAD -->
+<div class="media-section">
+  <div class="media-upload" onclick="document.getElementById('fileInput').click()">
+    <div class="upload-icon">📸</div>
+    <div class="upload-text">Add Photo or Video</div>
+    <div class="upload-sub">Tap to upload from gallery</div>
+  </div>
+  <input type="file" id="fileInput" accept="image/*,video/*" style="display:none" onchange="previewMedia(event)">
+  <div class="media-options">
+    <div class="media-opt">📷 Camera</div>
+    <div class="media-opt">🎞️ Gallery</div>
+    <div class="media-opt">🎵 Audio</div>
+  </div>
+</div>
+
+<!-- TEXT -->
+<div class="text-section">
+  <div class="user-row">
+    <div class="avatar">😎</div>
+    <div class="user-name">Your Name</div>
+  </div>
+  <textarea id="postText" placeholder="What's your vibe today? ✦" maxlength="500" oninput="updateCount()"></textarea>
+</div>
+<div class="char-count"><span id="charCount">0</span>/500</div>
+
+<!-- AUDIENCE -->
+<div class="audience-wrap">
+  <div class="audience-btn">🌍 <span>Everyone</span> ▾</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ADD ONS -->
+<div class="addons">
+  <div class="addon-item">
+    <span class="addon-icon">#️⃣</span>
+    <div class="addon-info">
+      <div class="addon-title">Add Tags</div>
+      <div class="addon-sub">Help people find your vibe</div>
+    </div>
+    <span class="addon-arrow">›</span>
+  </div>
+  <div class="addon-item">
+    <span class="addon-icon">📍</span>
+    <div class="addon-info">
+      <div class="addon-title">Add Location</div>
+      <div class="addon-sub">Share where you are</div>
+    </div>
+    <span class="addon-arrow">›</span>
+  </div>
+  <div class="addon-item">
+    <span class="addon-icon">😊</span>
+    <div class="addon-info">
+      <div class="addon-title">Feeling / Activity</div>
+      <div class="addon-sub">What are you feeling?</div>
+    </div>
+    <span class="addon-arrow">›</span>
+  </div>
+  <div class="addon-item">
+    <span class="addon-icon">👥</span>
+    <div class="addon-info">
+      <div class="addon-title">Tag People</div>
+      <div class="addon-sub">Who are you with?</div>
+    </div>
+    <span class="addon-arrow">›</span>
+  </div>
+</div>
+
+<script>
+  function setType(tab){
+    document.querySelectorAll('.type-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+  }
+  function updateCount(){
+    const t=document.getElementById('postText').value.length;
+    document.getElementById('charCount').textContent=t;
+  }
+  function previewMedia(e){
+    const file=e.target.files[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=function(ev){
+      const wrap=document.querySelector('.media-upload');
+      wrap.innerHTML=`<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:18px;">`;
+    };
+    reader.readAsDataURL(file);
+  }
+  function submitPost(){
+    const text=document.getElementById('postText').value.trim();
+    if(!text){alert('লিখো কিছু একটা! ✦');return;}
+    alert('Vibe posted! 🔥💜');
+    window.location.href='index.html';
+  }
+</script>
+</body>
+</html>
